@@ -2,10 +2,8 @@ package com.example.dar_hw_3.aspect;
 
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.AfterThrowing;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.*;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
@@ -37,5 +35,21 @@ public class LoggingAspect {
         log.error("Endpoint {} threw an exception:", joinPoint.getSignature().getName());
         log.error("Exception {}", exception.getMessage());
         log.info("---------");
+    }
+
+    @Around(value = "execution(* com.example.dar_hw_3.controller.StudentController.*(..))")
+    public Object logAround(ProceedingJoinPoint joinPoint) throws Throwable {
+        long start = System.currentTimeMillis();
+
+        Object result = joinPoint.proceed();
+
+        long end = System.currentTimeMillis();
+
+        log.info("---------");
+        log.info("Endpoint {} executed in {} ms", joinPoint.getSignature().getName(), end-start);
+        log.info("Result is {}", result);
+        log.info("---------");
+
+        return result;
     }
 }
